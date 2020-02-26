@@ -3,8 +3,9 @@ import nanoid from "nanoid";
 export const STATUS_ACTIVE = 'active'
 export const STATUS_DONE = 'done'
 
-export const ACTION_ADD = 'addTodo'
+export const ACTION_ADD = 'add'
 export const ACTION_TOGGLE_STATUS = 'toggleStatus'
+export const ACTION_DELETE = 'delete'
 
 export interface todo {
   title: string,
@@ -46,10 +47,18 @@ export function reducer (state: stateInterface, action: any) {
       return {
         todoList: sortedArray([...state.todoList, action.todo])
       }
+    case ACTION_DELETE:
+      return {
+        todoList: state.todoList.filter((todo: todo) => todo.id !== action.todoId)
+      }
     case ACTION_TOGGLE_STATUS:
       const certainTodo = state.todoList.find((todo: todo) => todo.id === action.todoId)
       if (certainTodo === undefined) {
-        throw new Error('Cant find todo by id ' + action.todoId)
+        //eslint-disable-next-line
+        console.warn('Cant find todo by id ' + action.todoId)
+        return {
+          ...state
+        }
       }
 
       return {

@@ -1,8 +1,11 @@
 import React, { useReducer } from 'react';
 import nanoid from 'nanoid'
 import * as todoReducer from './stores/todo'
+import { Card, Icon, Popconfirm } from 'antd'
 
 import styles from './App.module.scss';
+
+const { Meta } = Card
 
 function App() {
 
@@ -13,17 +16,40 @@ function App() {
       {
         state.todoList.map((todo) => {
           return (
-            <div className={styles.todo + ' ' + todo.status} key={todo.id} onClick={() => {
-              dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
-            }}>
-              {todo.title}
-            </div>
+            <Card className={styles.todo + ' ' + todo.status} style={{marginTop: 20}} key={todo.id}
+            actions={[
+              <Icon type="check" onClick={() => {
+                dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
+              }} />,
+              <Icon type="edit" />,
+              <Popconfirm
+                placement="leftBottom"
+                title={'Are you sure to delete this task?'}
+                onConfirm={() => {
+                  dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Icon type="delete" />
+              </Popconfirm>
+              ,
+            ]}>
+              <Meta
+                title={todo.title}
+              />
+            </Card>
           )
         })
       }
-      <button onClick={() => {
+      <Icon
+        type="plus-circle"
+        title='Add new todo task'
+        className={styles.iconNewTodo}
+        style={{ fontSize: '100px', color: '#1fcc7c' }}
+        onClick={() => {
         dispatch({type: todoReducer.ACTION_ADD, todo: {title: 'Title ' + Date.now(), createdAt: new Date(), id: nanoid(), status: todoReducer.STATUS_ACTIVE}})
-      }} >Add new todo</button>
+      }}  />
     </div>
   );
 }
