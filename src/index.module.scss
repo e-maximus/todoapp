@@ -12,6 +12,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+:global(#root) {
+  padding-top: 10vh;
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

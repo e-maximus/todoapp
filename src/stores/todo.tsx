@@ -1,4 +1,5 @@
-import nanoid from "nanoid";
+import nanoid from 'nanoid'
+import { Moment } from 'moment'
 
 export const STATUS_ACTIVE = 'active'
 export const STATUS_DONE = 'done'
@@ -11,7 +12,8 @@ export interface todo {
   title: string,
   createdAt: Date,
   id: string,
-  status: 'active' | 'done'
+  status: 'active' | 'done',
+  dueTo?: Moment
 }
 
 export interface stateInterface {
@@ -19,10 +21,11 @@ export interface stateInterface {
 }
 
 export const initialState = (): stateInterface => ({
-  todoList: [
-    {title: 'Install modules', createdAt: new Date(), id: nanoid(), status: STATUS_ACTIVE},
-    {title: 'Run this app', createdAt: new Date(), id: nanoid(), status: STATUS_ACTIVE},
-  ]
+  todoList: sortedArray([
+    {title: 'Watch this awesome app!', createdAt: new Date(), id: nanoid(), status: STATUS_ACTIVE},
+    {title: 'Install node_modules', createdAt: new Date(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Run this app', createdAt: new Date(), id: nanoid(), status: STATUS_DONE},
+  ])
 })
 
 const sortTodo = (sortField = 'title') => (a: any | todo, b: any | todo): number => {

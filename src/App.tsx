@@ -1,7 +1,8 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import nanoid from 'nanoid'
 import * as todoReducer from './stores/todo'
-import { Card, Icon, Popconfirm } from 'antd'
+import { NewTodoForm } from './components/NewTodoForm'
+import { Card, Icon, Popconfirm, Modal, message } from 'antd'
 
 import styles from './App.module.scss';
 
@@ -10,6 +11,9 @@ const { Meta } = Card
 function App() {
 
   const [state, dispatch] = useReducer(todoReducer.reducer, todoReducer.initialState())
+  const [newTodoVisible, setNewTodoVisible] = useState(false)
+
+  console.log('Staete: ', JSON.stringify(state))
 
   return (
     <div className={styles.appContainer}>
@@ -23,7 +27,7 @@ function App() {
               }} />,
               <Icon type="edit" />,
               <Popconfirm
-                placement="leftBottom"
+                placement="top"
                 title={'Are you sure to delete this task?'}
                 onConfirm={() => {
                   dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
@@ -33,7 +37,6 @@ function App() {
               >
                 <Icon type="delete" />
               </Popconfirm>
-              ,
             ]}>
               <Meta
                 title={todo.title}
@@ -47,9 +50,19 @@ function App() {
         title='Add new todo task'
         className={styles.iconNewTodo}
         style={{ fontSize: '100px', color: '#1fcc7c' }}
-        onClick={() => {
-        dispatch({type: todoReducer.ACTION_ADD, todo: {title: 'Title ' + Date.now(), createdAt: new Date(), id: nanoid(), status: todoReducer.STATUS_ACTIVE}})
-      }}  />
+        onClick={() => {setNewTodoVisible(true)}} />
+      <Modal
+        title="New todo"
+        visible={newTodoVisible}
+        footer={null}
+        onCancel={() => {setNewTodoVisible(false)}}
+      >
+        <NewTodoForm onSubmit={(values) => {
+          dispatch({type: todoReducer.ACTION_ADD, todo: {createdAt: new Date(), id: nanoid(), status: todoReducer.STATUS_ACTIVE, ...values}})
+          setNewTodoVisible(false)
+          message.success('New task added')
+        }} />
+      </Modal>
     </div>
   );
 }
