@@ -12,8 +12,7 @@ function App() {
 
   const [state, dispatch] = useReducer(todoReducer.reducer, todoReducer.initialState())
   const [newTodoVisible, setNewTodoVisible] = useState(false)
-
-  console.log('Staete: ', JSON.stringify(state))
+  const [editTodo, setEditTodo] = useState()
 
   return (
     <div className={styles.appContainer}>
@@ -25,12 +24,15 @@ function App() {
               <Icon type="check" onClick={() => {
                 dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
               }} />,
-              <Icon type="edit" />,
+              <Icon type="edit" onClick={() => {
+                setEditTodo(todo)
+              }} />,
               <Popconfirm
                 placement="top"
                 title={'Are you sure to delete this task?'}
                 onConfirm={() => {
                   dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
+                  message.success('Task has been deleted')
                 }}
                 okText="Yes"
                 cancelText="No"
@@ -62,6 +64,22 @@ function App() {
           setNewTodoVisible(false)
           message.success('New task added')
         }} />
+      </Modal>
+
+      <Modal
+        title={'Edit todo "' + (editTodo ? editTodo.title.length > 20 ? editTodo.title.substring(20) + '..' : editTodo.title : '') + '"'}
+        visible={!!editTodo}
+        footer={null}
+        onCancel={() => {setEditTodo(null)}}
+      >
+        <NewTodoForm
+          onSubmit={(values) => {
+            message.success('Task edited')
+            setEditTodo(null)
+            dispatch({type: todoReducer.ACTION_EDIT, todoId: editTodo.id, todo: {...editTodo, ...values}})
+          }}
+          editTodo={editTodo}
+        />
       </Modal>
     </div>
   );

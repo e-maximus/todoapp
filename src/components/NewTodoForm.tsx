@@ -1,7 +1,8 @@
 import React, { SyntheticEvent } from 'react'
 import { Moment } from 'moment'
-import { Form, Input, DatePicker, Button } from 'antd'
+import { Form, Input, DatePicker, Button, Checkbox } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form';
+import { todo, STATUS_DONE, STATUS_ACTIVE } from '../stores/todo';
 
 interface todoFormValues {
   title: string,
@@ -32,7 +33,8 @@ const tailFormItemLayout = {
 }
 
 interface OwnProps extends FormComponentProps {
-  onSubmit: (values: todoFormValues) => void
+  onSubmit: (values: todoFormValues) => void,
+  editTodo?: todo,
 }
 
 const hasErrors = (fieldsError: any) => {
@@ -48,7 +50,9 @@ class TodoForm extends React.PureComponent<OwnProps> {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values)
+        if (values.status !== undefined) {
+          values.status = values.status === true ? STATUS_DONE : STATUS_ACTIVE
+        }
         this.props.onSubmit(values)
         this.props.form.resetFields()
       }
@@ -57,6 +61,7 @@ class TodoForm extends React.PureComponent<OwnProps> {
 
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+    const { editTodo } = this.props
 
     const usernameError = isFieldTouched('title') && getFieldError('title')
     const passwordError = isFieldTouched('dueTo') && getFieldError('dueTo')
@@ -72,6 +77,7 @@ class TodoForm extends React.PureComponent<OwnProps> {
         >
           {getFieldDecorator('title', {
             rules: [{ required: true, message: 'Please add title!' }],
+            initialValue: editTodo ? editTodo.title : ''
           })(
             <Input
               placeholder="New todo title"
@@ -83,13 +89,38 @@ class TodoForm extends React.PureComponent<OwnProps> {
           help={passwordError || ''}
           label='Due to'
         >
-          {getFieldDecorator('dueTo')(
+          {getFieldDecorator('dueTo', {
+            initialValue: editTodo ? editTodo.dueTo : undefined
+          })(
             <DatePicker onChange={(e) => {console.log(e)}} />,
           )}
         </Form.Item>
+        {editTodo && <Form.Item
+          label='Created at'
+        >
+          {getFieldDecorator('createdAt', {
+            initialValue: editTodo ? editTodo.createdAt : undefined
+          })(
+            <Input
+              placeholder="New todo title"
+              readOnly
+            />
+          )}
+        </Form.Item>}
+        {editTodo && <Form.Item
+          label='Done'
+        >
+          {getFieldDecorator('status', {
+            initialValue: editTodo ? editTodo.status === STATUS_DONE : false
+          })(
+            <Checkbox
+              defaultChecked={editTodo ? editTodo.status === STATUS_DONE : false}
+            />
+          )}
+        </Form.Item>}
         <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-            Add
+            {editTodo ? 'Update' : 'Add'}
           </Button>
         </Form.Item>
       </Form>

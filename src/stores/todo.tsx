@@ -5,6 +5,7 @@ export const STATUS_ACTIVE = 'active'
 export const STATUS_DONE = 'done'
 
 export const ACTION_ADD = 'add'
+export const ACTION_EDIT = 'edit'
 export const ACTION_TOGGLE_STATUS = 'toggleStatus'
 export const ACTION_DELETE = 'delete'
 
@@ -43,8 +44,9 @@ const sortedArray = (array: Array<todo>) => {
   return array.sort(sortTodo())
 }
 
-
+// @todo add interface for actions
 export function reducer (state: stateInterface, action: any) {
+  console.log('Reducer: ', JSON.stringify(action))
   switch (action.type) {
     case ACTION_ADD:
       return {
@@ -55,6 +57,7 @@ export function reducer (state: stateInterface, action: any) {
         todoList: state.todoList.filter((todo: todo) => todo.id !== action.todoId)
       }
     case ACTION_TOGGLE_STATUS:
+    case ACTION_EDIT:
       const certainTodo = state.todoList.find((todo: todo) => todo.id === action.todoId)
       if (certainTodo === undefined) {
         //eslint-disable-next-line
@@ -64,10 +67,14 @@ export function reducer (state: stateInterface, action: any) {
         }
       }
 
+      const editData = action.type === ACTION_TOGGLE_STATUS ? {
+        status: certainTodo.status === STATUS_ACTIVE ? STATUS_DONE : STATUS_ACTIVE
+      } : {...action.todo}
+
       return {
         todoList: sortedArray([
           ...state.todoList.filter((todo) => todo.id !== action.todoId),
-          { ...certainTodo, status: certainTodo.status === STATUS_ACTIVE ? STATUS_DONE : STATUS_ACTIVE}
+          { ...certainTodo, ...editData }
         ])
       }
     default:

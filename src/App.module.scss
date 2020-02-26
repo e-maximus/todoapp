@@ -23,7 +23,9 @@
 }
 
 .iconNewTodo {
-  margin-top: 20px;
+  position: fixed;
+  left: 90vw;
+  bottom: 5vh;
 }
 
 :global(.newTodoTextarea) {
