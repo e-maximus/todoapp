@@ -1,5 +1,6 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 import nanoid from 'nanoid'
+import Moment from 'moment'
 import * as todoReducer from './stores/todo'
 import { NewTodoForm } from './components/NewTodoForm'
 import { Card, Icon, Popconfirm, Modal, message } from 'antd'
@@ -7,12 +8,21 @@ import { Card, Icon, Popconfirm, Modal, message } from 'antd'
 import styles from './App.module.scss';
 
 const { Meta } = Card
+const storageReducer = todoReducer.LocalStorageDecorator(todoReducer.reducer)
 
 function App() {
 
-  const [state, dispatch] = useReducer(todoReducer.reducer, todoReducer.initialState())
+  const [state, dispatch] = useReducer(storageReducer, todoReducer.defaultState())
   const [newTodoVisible, setNewTodoVisible] = useState(false)
   const [editTodo, setEditTodo] = useState()
+
+  useEffect(() => {
+    const storageState = localStorage.getItem(todoReducer.STORAGE_KEY)
+    const newState = typeof storageState === 'string' ? Object.fromEntries(Object.entries(JSON.parse(storageState)).map(([key, value]) => {
+      return [key, todoReducer.storageConvertorMap[key] ? todoReducer.storageConvertorMap[key](value) : value]
+    })) : todoReducer.initialState()
+    dispatch({type: todoReducer.ACTION_LOAD_STATE, newState})
+  }, [])
 
   return (
     <div className={styles.appContainer}>
@@ -60,7 +70,7 @@ function App() {
         onCancel={() => {setNewTodoVisible(false)}}
       >
         <NewTodoForm onSubmit={(values) => {
-          dispatch({type: todoReducer.ACTION_ADD, todo: {createdAt: new Date(), id: nanoid(), status: todoReducer.STATUS_ACTIVE, ...values}})
+          dispatch({type: todoReducer.ACTION_ADD, todo: {createdAt: Moment(), id: nanoid(), status: todoReducer.STATUS_ACTIVE, ...values}})
           setNewTodoVisible(false)
           message.success('New task added')
         }} />

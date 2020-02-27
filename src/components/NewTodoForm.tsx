@@ -1,12 +1,12 @@
 import React, { SyntheticEvent } from 'react'
-import { Moment } from 'moment'
+import Moment, { Moment as MomentType } from 'moment'
 import { Form, Input, DatePicker, Button, Checkbox } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form';
 import { todo, STATUS_DONE, STATUS_ACTIVE } from '../stores/todo';
 
 interface todoFormValues {
   title: string,
-  dueTo?: Moment
+  dueTo?: MomentType
 }
 
 const formItemLayout = {
@@ -92,19 +92,16 @@ class TodoForm extends React.PureComponent<OwnProps> {
           {getFieldDecorator('dueTo', {
             initialValue: editTodo ? editTodo.dueTo : undefined
           })(
-            <DatePicker onChange={(e) => {console.log(e)}} />,
+            <DatePicker />,
           )}
         </Form.Item>
         {editTodo && <Form.Item
           label='Created at'
         >
           {getFieldDecorator('createdAt', {
-            initialValue: editTodo ? editTodo.createdAt : undefined
+            initialValue: typeof editTodo.createdAt === 'object' && editTodo.createdAt instanceof Moment ? editTodo.createdAt.format('LLLL') : undefined
           })(
-            <Input
-              placeholder="New todo title"
-              readOnly
-            />
+            <Input readOnly />
           )}
         </Form.Item>}
         {editTodo && <Form.Item
