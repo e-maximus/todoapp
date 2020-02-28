@@ -9,6 +9,7 @@ import styles from './App.module.scss';
 
 const { Meta } = Card
 const storageReducer = todoReducer.LocalStorageDecorator(todoReducer.reducer)
+const today = Moment()
 
 function App() {
 
@@ -26,42 +27,58 @@ function App() {
 
   return (
     <div className={styles.appContainer}>
-      {
-        state.todoList.map((todo) => {
-          return (
-            <Card className={styles.todo + ' ' + todo.status} style={{marginTop: 20}} key={todo.id}
-            actions={[
-              <Icon type="check" onClick={() => {
-                dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
-              }} />,
-              <Icon type="edit" onClick={() => {
-                setEditTodo(todo)
-              }} />,
-              <Popconfirm
-                placement="top"
-                title={'Are you sure to delete this task?'}
-                onConfirm={() => {
-                  dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
-                  message.success('Task has been deleted')
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Icon type="delete" />
-              </Popconfirm>
-            ]}>
-              <Meta
-                title={todo.title}
-              />
-            </Card>
-          )
-        })
-      }
+      <div className={styles.header}>
+        {today.format('D MMM, dddd')}
+      </div>
+      <div className={styles.todoListWrapper}>
+        {
+          state.todoList.map((todo) => {
+            return (
+              <Card className={styles.todo + ' ' + todo.status} style={{marginTop: 20, minHeight: 150}} bodyStyle={{width: '100%'}} key={todo.id}>
+                <Meta title={todo.title} className={styles.cardMeta} />
+                {todo.dueTo && typeof todo.dueTo !== 'string' && <div className={styles.cardFooter}>
+                  {`due to: ${todo.dueTo.format('D MMMM')}`}
+                </div>}
+                <div className={styles.actionsPanel}>
+                  <div className={styles.actionWrapper}>
+                    <Icon type="check" style={{ fontSize: '20px' }} onClick={(e) => {
+                      dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }} />
+                  </div>
+                  <div className={styles.actionWrapper}>
+                    <Icon type="edit" style={{ fontSize: '20px' }} onClick={(e) => {
+                      setEditTodo(todo)
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }} />
+                  </div>
+                  <div className={styles.actionWrapper}>
+                    <Popconfirm
+                      placement="top"
+                      title={'Are you sure to delete this task?'}
+                      onConfirm={() => {
+                        dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
+                        message.success('Task has been deleted')
+                      }}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Icon type="delete" style={{ fontSize: '20px' }} />
+                    </Popconfirm>
+                  </div>
+                </div>
+              </Card>
+            )
+          })
+        }
+      </div>
       <Icon
         type="plus-circle"
         title='Add new todo task'
         className={styles.iconNewTodo}
-        style={{ fontSize: '100px', color: '#1fcc7c' }}
+        style={{ fontSize: '70px', color: '#1fcc7c' }}
         onClick={() => {setNewTodoVisible(true)}} />
       <Modal
         title="New todo"
