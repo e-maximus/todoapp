@@ -94,7 +94,7 @@ function App() {
       </Modal>
 
       <Modal
-        title={'Edit todo "' + (editTodo ? editTodo.title.length > 20 ? editTodo.title.substring(20) + '..' : editTodo.title : '') + '"'}
+        title={'Edit todo "' + (editTodo ? (editTodo.title.length > 20 ? editTodo.title.substring(0, 20) + '..' : editTodo.title) : '') + '"'}
         visible={!!editTodo}
         footer={null}
         onCancel={() => {setEditTodo(null)}}
