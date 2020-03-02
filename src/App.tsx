@@ -1,13 +1,13 @@
-import React, { useReducer, useState, useEffect } from 'react';
+import React, {useReducer, useState, useEffect, useCallback, SyntheticEvent} from 'react';
 import nanoid from 'nanoid'
 import Moment from 'moment'
 import * as todoReducer from './stores/todo'
 import { NewTodoForm } from './components/NewTodoForm'
-import { Card, Icon, Popconfirm, Modal, message } from 'antd'
+import Todo from './components/Todo'
+import { Icon, Modal, message } from 'antd'
 
 import styles from './App.module.scss';
 
-const { Meta } = Card
 const storageReducer = todoReducer.LocalStorageDecorator(todoReducer.reducer)
 const today = Moment()
 
@@ -25,6 +25,23 @@ function App() {
     dispatch({type: todoReducer.ACTION_LOAD_STATE, newState})
   }, [])
 
+  const handleToggleClick = useCallback((todo: todoReducer.todo) => (e: SyntheticEvent) => {
+    dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
+    e.preventDefault()
+    e.stopPropagation()
+  }, [])
+
+  const handleEdit = useCallback((todo: todoReducer.todo) => (e: SyntheticEvent) => {
+    setEditTodo(todo)
+    e.preventDefault()
+    e.stopPropagation()
+  }, [])
+
+  const handleDelete = useCallback((todo: todoReducer.todo) => () => {
+    dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
+    message.success('Task has been deleted')
+  }, [])
+
   return (
     <div className={styles.appContainer}>
       <div className={styles.header}>
@@ -33,44 +50,13 @@ function App() {
       <div className={styles.todoListWrapper}>
         {
           state.todoList.map((todo) => {
-            return (
-              <Card className={styles.todo + ' ' + todo.status} style={{marginTop: 20, minHeight: 150}} bodyStyle={{width: '100%'}} key={todo.id}>
-                <Meta title={todo.title} className={styles.cardMeta} />
-                {todo.dueTo && typeof todo.dueTo !== 'string' && <div className={styles.cardFooter}>
-                  {`due to: ${todo.dueTo.format('D MMMM')}`}
-                </div>}
-                <div className={styles.actionsPanel}>
-                  <div className={styles.actionWrapper}>
-                    <Icon type="check" style={{ fontSize: '20px' }} onClick={(e) => {
-                      dispatch({type: todoReducer.ACTION_TOGGLE_STATUS, todoId: todo.id})
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }} />
-                  </div>
-                  <div className={styles.actionWrapper}>
-                    <Icon type="edit" style={{ fontSize: '20px' }} onClick={(e) => {
-                      setEditTodo(todo)
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }} />
-                  </div>
-                  <div className={styles.actionWrapper}>
-                    <Popconfirm
-                      placement="top"
-                      title={'Are you sure to delete this task?'}
-                      onConfirm={() => {
-                        dispatch({type: todoReducer.ACTION_DELETE, todoId: todo.id})
-                        message.success('Task has been deleted')
-                      }}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Icon type="delete" style={{ fontSize: '20px' }} />
-                    </Popconfirm>
-                  </div>
-                </div>
-              </Card>
-            )
+            return <Todo
+              key={todo.id}
+              todo={todo}
+              handleToggleClick={handleToggleClick}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+            />
           })
         }
       </div>

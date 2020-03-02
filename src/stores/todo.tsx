@@ -31,7 +31,20 @@ export const defaultState = (): stateInterface => ({
 export const initialState = (): stateInterface => ({
   todoList: sortedArray([
     {title: 'Watch this awesome app!', createdAt: Moment(), id: nanoid(), status: STATUS_ACTIVE},
-    {title: 'Install node_modules', createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
+    {title: 'Install node_modules ' + nanoid(), createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
     {title: 'Run this app', createdAt: Moment(), id: nanoid(), status: STATUS_DONE},
   ]),
   initialLoaded: false
