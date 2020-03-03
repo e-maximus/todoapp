@@ -1,4 +1,4 @@
-import React, {useMemo, SyntheticEvent} from 'react'
+import React from 'react'
 import * as todoReducer from '../stores/todo'
 import {Card, Icon, Popconfirm} from 'antd';
 import styles from '../App.module.scss';
@@ -7,12 +7,10 @@ const { Meta } = Card
 
 interface TodoComponent {
   todo: todoReducer.todo,
-  handleToggleClick: (todo: todoReducer.todo) => (e: SyntheticEvent) => void
-  handleEdit: (todo: todoReducer.todo) => (e: SyntheticEvent) => void
   handleDelete: (todo: todoReducer.todo) => () => void
 }
 
-const Todo = ({ todo, handleToggleClick, handleEdit, handleDelete }: TodoComponent) => {
+const Todo = ({ todo, handleDelete }: TodoComponent) => {
   return (
     <Card className={styles.todo + ' ' + todo.status} style={{marginTop: 20, minHeight: 150}} bodyStyle={{width: '100%'}} key={todo.id}>
       <Meta title={todo.title} className={styles.cardMeta} />
@@ -21,10 +19,10 @@ const Todo = ({ todo, handleToggleClick, handleEdit, handleDelete }: TodoCompone
       </div>}
       <div className={styles.actionsPanel}>
         <div className={styles.actionWrapper}>
-          <Icon type="check" style={{ fontSize: '20px' }} onClick={handleToggleClick(todo)} />
+          <Icon className='eventIcon' type="check" style={{ fontSize: '20px' }} data-event-type={todoReducer.ACTION_TOGGLE_STATUS} data-id={todo.id} />
         </div>
         <div className={styles.actionWrapper}>
-          <Icon type="edit" style={{ fontSize: '20px' }} onClick={handleEdit(todo)} />
+          <Icon className='eventIcon' type="edit" style={{ fontSize: '20px' }} data-event-type={todoReducer.ACTION_EDIT} data-id={todo.id} />
         </div>
         <div className={styles.actionWrapper}>
           <Popconfirm
@@ -34,7 +32,7 @@ const Todo = ({ todo, handleToggleClick, handleEdit, handleDelete }: TodoCompone
             okText="Yes"
             cancelText="No"
           >
-            <Icon type="delete" style={{ fontSize: '20px' }} />
+            <Icon className='eventIcon' type="delete" data-event-type={todoReducer.ACTION_DELETE} data-id={todo.id} style={{ fontSize: '20px' }} />
           </Popconfirm>
         </div>
       </div>
